@@ -68,3 +68,5 @@ router.get('/:id', RecipeController.getRecipeById);
 router.post('/', recipeValidation.create, RecipeController.createRecipe);
 
 // ... similar annotations for PUT and DELETE
+
+export default router;

@@ -1,32 +1,33 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { RecipeService } from '../services/RecipeService';
 
 export class RecipeController {
-  static async getAllRecipes(req: Request, res: Response) {
+  static getAllRecipes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const recipes = await RecipeService.getAllRecipes();
       res.json(recipes);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch recipes' });
     }
-  }
+  };
 
-  static async getRecipeById(req: Request, res: Response) {
+  static getRecipeById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
       const recipe = await RecipeService.getRecipeById(id);
-      
+
       if (!recipe) {
-        return res.status(404).json({ error: 'Recipe not found' });
+        res.status(404).json({ error: 'Recipe not found' });
+        return;
       }
-      
+
       res.json(recipe);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch recipe' });
     }
-  }
+  };
 
-  static async createRecipe(req: Request, res: Response) {
+  static createRecipe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       // For simplicity, using a mock user ID
       const mockUserId = 'user123';
@@ -35,25 +36,26 @@ export class RecipeController {
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
-  }
+  };
 
-  static async updateRecipe(req: Request, res: Response) {
+  static updateRecipe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
       const mockUserId = 'user123';
       const recipe = await RecipeService.updateRecipe(id, req.body, mockUserId);
-      
+
       if (!recipe) {
-        return res.status(404).json({ error: 'Recipe not found' });
+        res.status(404).json({ error: 'Recipe not found' });
+        return;
       }
-      
+
       res.json(recipe);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
-  }
+  };
 
-  static async deleteRecipe(req: Request, res: Response) {
+  static deleteRecipe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
       const mockUserId = 'user123';
@@ -62,5 +64,5 @@ export class RecipeController {
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
-  }
+  };
 }

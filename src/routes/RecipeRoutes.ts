@@ -67,6 +67,54 @@ router.get('/:id', RecipeController.getRecipeById);
  */
 router.post('/', recipeValidation.create, RecipeController.createRecipe);
 
-// ... similar annotations for PUT and DELETE
+/**
+ * @swagger
+ * /api/recipes/{id}:
+ *   put:
+ *     summary: Update a recipe by ID
+ *     tags: [Recipes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Recipe ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateRecipeRequest'
+ *     responses:
+ *       200:
+ *         description: Recipe updated successfully
+ *       404:
+ *         description: Recipe not found
+ *       400:
+ *         description: Invalid input data
+ */
+router.put('/:id', recipeValidation.update, RecipeController.updateRecipe);
+
+/**
+ * @swagger
+ * /api/recipes/{id}:
+ *   delete:
+ *     summary: Delete a recipe by ID
+ *     tags: [Recipes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Recipe ID
+ *     responses:
+ *       204:
+ *         description: Recipe deleted successfully
+ *       404:
+ *         description: Recipe not found
+ */
+router.delete('/:id', RecipeController.deleteRecipe);
 
 export default router;

@@ -1,7 +1,62 @@
 import request from 'supertest';
-import app from '../src/server';
+import app from '../src/app';
+
+// Mock Firebase Admin
+let mockRecipes: any[] = [];
+let mockRecipeId = 'mock-id';
+
+jest.mock('firebase-admin', () => ({
+  initializeApp: jest.fn(),
+  firestore: jest.fn(() => ({
+    collection: jest.fn(() => ({
+      get: jest.fn(() => Promise.resolve({
+        docs: mockRecipes.map(recipe => ({
+          id: recipe.id,
+          data: () => recipe
+        }))
+      })),
+      doc: jest.fn((id: string) => ({
+        get: jest.fn(() => {
+          const recipe = mockRecipes.find(r => r.id === id);
+          return Promise.resolve({
+            exists: !!recipe,
+            data: () => recipe || null
+          });
+        }),
+        set: jest.fn(() => Promise.resolve()),
+        update: jest.fn((data: any) => {
+          const index = mockRecipes.findIndex(r => r.id === id);
+          if (index !== -1) {
+            mockRecipes[index] = { ...mockRecipes[index], ...data };
+          }
+          return Promise.resolve();
+        }),
+        delete: jest.fn(() => {
+          mockRecipes = mockRecipes.filter(r => r.id !== id);
+          return Promise.resolve();
+        })
+      })),
+      add: jest.fn((data: any) => {
+        const newRecipe = { ...data, id: mockRecipeId };
+        mockRecipes.push(newRecipe);
+        return Promise.resolve({ id: mockRecipeId });
+      })
+    }))
+  })),
+  auth: jest.fn(),
+  apps: [],
+  credential: {
+    cert: jest.fn()
+  }
+}));
+
+// Mock dotenv
+jest.mock('dotenv', () => ({
+  config: jest.fn()
+}));
 
 describe('Indian Recipe API', () => {
+
   describe('Health Check', () => {
     it('should return API status', async () => {
       const response = await request(app)
@@ -55,7 +110,7 @@ describe('Indian Recipe API', () => {
         expect(response.body.title).toBe('Masala Khichdi');
         expect(response.body.cuisineType).toBe('Comfort Food');
         expect(response.body.difficulty).toBe('Easy');
-        
+
         createdRecipeId = response.body.id;
       });
 

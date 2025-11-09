@@ -1,7 +1,10 @@
+// src/server.ts (cleaned up)
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import recipeRoutes from './routes/RecipeRoutes';
+import { setupSwagger } from './docs/swagger';
 
 dotenv.config();
 
@@ -13,56 +16,36 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Keep original functions for compatibility
-export function greet(name: string): string {
-    const message = "Hello, " + name + "!";
-    console.log(message);
-    return message;
-}
+// Routes
+app.use('/api/recipes', recipeRoutes);
 
-export function add(a: number, b: number): number {
-    const result = a + b;
-    return result;
-}
+// Swagger Documentation
+setupSwagger(app);
 
-// New Express routes
-app.get('/', (req, res) => {
-    const message = greet('Indian Recipe API');
-    res.json({ 
-        message: message,
-        status: 'running',
-        timestamp: new Date().toISOString()
-    });
-});
-
+// Basic health check route
 app.get('/health', (req, res) => {
-    res.status(200).json({ 
-        status: 'healthy',
-        service: 'Recipe API',
-        version: '1.0.0'
-    });
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'Recipe API is running!',
+    timestamp: new Date().toISOString()
+  });
 });
 
-// A route that uses original add function
-app.get('/api/math/add/:a/:b', (req, res) => {
-    const a = parseInt(req.params.a);
-    const b = parseInt(req.params.b);
-    const result = add(a, b);
-    
-    res.json({
-        operation: 'addition',
-        numbers: [a, b],
-        result: result
-    });
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Welcome to Indian Recipe API! ',
+    endpoints: {
+      health: '/health',
+      recipes: '/api/recipes', 
+      documentation: '/api-docs'
+    }
+  });
 });
 
-// Start the server
-if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`Recipe API Server running on port ${PORT}`);
-        console.log(`Visit: http://localhost:${PORT}`);
-        greet("Recipe API Server");
-    });
-}
+app.listen(PORT, () => {
+  console.log(`Indian Recipe API running on port ${PORT}`);
+  console.log(`API Documentation: http://localhost:${PORT}/api-docs`);
+});
 
 export default app;

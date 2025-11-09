@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ main, development ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      firestore:
+        image: google/cloud-sdk:emulators
+        ports:
+          - 8080:8080
+        options: >-
+          --health-cmd "curl --fail http://localhost:8080"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Start Firestore emulator
+      run: |
+        gcloud emulators firestore start --host-port=localhost:8080 &
+        sleep 5
+
+    - name: Run linting
+      run: npm run lint
+
+    - name: Run tests
+      run: npm test
+      env:
+        NODE_ENV: test
+        FIRESTORE_EMULATOR_HOST: localhost:8080
+
+    - name: Generate coverage report
+      run: npm run test:coverage
+      env:
+        NODE_ENV: test
+        FIRESTORE_EMULATOR_HOST: localhost:8080

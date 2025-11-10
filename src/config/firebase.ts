@@ -17,7 +17,7 @@ if (isTest) {
     });
   }
 } else {
-  // ✅ Load service account key file directly
+  // Load service account key file directly
   const serviceAccountPath = path.resolve(__dirname, '../../securityAccountkey.json');
   const serviceAccount = require(serviceAccountPath);
 

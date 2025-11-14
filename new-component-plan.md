@@ -1,107 +1,66 @@
-# New Component Research & Implementation Plan
+# New Component Selected: Express-rate-limit (Rate Limiting)
 
-## Project Context
-Project: Recipe Management API  
-Current Features: CRUD for recipes, ingredients, reviews, favorites, Firebase Auth, Firestore DB, Joi validation, Swagger documentation, Jest testing.  
+I chose express-rate-limit as my new backend component. This adds rate limiting to the API, which helps protect the system from brute-force attempts and too many repeated requests.
 
-**Objective of New Component:**  
-Introduce a **Recipe Rating & Recommendation System** to enhance user engagement and provide smart suggestions for Milestone 2 and 3.
+## What I Already Built (Milestone 1)
 
----
+In Milestone 1, I completed all the main backend setup:
 
-## Component Options Considered
+### Layered Architecture
+I used repository, service, and controller layers to keep everything clean and separated.
 
-### Option 1: Recipe Rating & Recommendation
-- **Description:** Allows users to rate recipes (1–5 stars) and receive recommended recipes based on ratings and popularity.
-- **Integration Points:**
-  - Collections: `reviews`, `recipes`
-  - Services: Extend `RecipeService` to calculate average rating and generate recommendations.
-  - Endpoints:
-    - `GET /api/recipes/top-rated` → Returns top 5 recipes by average rating.
-    - `GET /api/recipes/recommended/:userId` → Personalized suggestions.
-- **Benefits:**
-  - Improves user experience.
-  - Leverages existing `reviews` data.
-  - Useful for Milestone 2 (feature expansion) and Milestone 3 (analytics and personalization).
-- **Implementation Notes:**
-  - Use Firestore aggregation (average rating, count) or store `averageRating` in `recipes` doc.
-  - Implement caching for performance.
-  - Optional: Firebase Functions for background updates.
+### Firebase Integration
+I configured Firestore with both test and production environments.
 
----
+### Validation System
+I added Joi middleware so incoming data gets checked before it reaches the controllers.
 
-### Option 2: Recipe Image Upload & Storage
-- **Description:** Users can upload images for recipes.
-- **Integration Points:**
-  - Services: `RecipeService` → Add `imageURL` field.
-  - Middleware: Multer for file upload handling.
-  - Firestore: Store URLs in `recipes` collection.
-  - Storage: Firebase Storage or local storage.
-- **Benefits:**
-  - Visual appeal for recipes.
-  - Required for Milestone 2/3 UI enhancements.
-- **Implementation Notes:**
-  - Validate image type/size.
-  - Use signed URLs for secure access.
-  - Optional: generate thumbnails for faster loading.
+### API Documentation
+I added Swagger so anyone can read and understand the API easily.
 
----
+### Testing Framework
+I wrote Jest tests to check the main Recipe operations.
 
-### Option 3: Ingredient Stock & Nutrition Tracker
-- **Description:** Track ingredient stock levels and nutritional info.
-- **Integration Points:**
-  - Collections: `ingredients` → add `stock` and `nutrition` fields.
-  - Endpoints:
-    - `GET /api/ingredients/stock` → Check available quantities.
-    - `GET /api/ingredients/nutrition/:recipeId` → Returns combined nutrition info.
-- **Benefits:**
-  - Advanced feature for Milestone 3.
-  - Encourages more comprehensive app usage.
-- **Implementation Notes:**
-  - Requires new fields and calculations.
-  - Nutrition database or API needed.
+Along with this, I built the full Recipe API (CRUD) with proper error handling and Firebase integration.
 
----
+## What I Plan to Add Now (New Component)
 
-## Chosen Component: **Recipe Rating & Recommendation**
+I decided to include rate limiting for the login and register routes. These endpoints are the most sensitive, so limiting the number of attempts will improve security and prevent abuse.
 
-**Reasoning:**  
-- Aligns with course content and backend focus.  
-- Directly leverages existing collections (`reviews`, `recipes`).  
-- Scales for Milestone 2 (top-rated recipes) and Milestone 3 (personalized recommendations).  
-- Enhances the API without over-complicating the current structure.
+## Why I Chose This Component
 
----
+I considered other components like Multer (file upload) or Nodemailer (email), but I chose rate limiting because:
+
+- It improves the API’s security directly
+- It fits perfectly with what I already built
+- It’s simple enough to implement and test
+- Real-world APIs use this in production services
+- It’s clearly a “backend component,” not just another endpoint
 
 ## Implementation Plan
 
-### Database Changes
-- Add `averageRating` field to `recipes` documents.
-- Optional: add `ratingsCount` for quick calculations.
+### Milestone 2
 
-### Service Layer
-- Extend `RecipeService` with:
-  - `getTopRatedRecipes(limit: number)`
-  - `getRecommendedRecipes(userId: string)`
+- Install the express-rate-limit package
+- Create a separate middleware file
+- Configure the limit (example: 5 attempts every 15 minutes)
+- Apply it to /login and /register routes
+- Write Jest tests for it
+- Show a demo of how the limit blocks repeated requests
 
-### Controller Layer
-- Add endpoints in `RecipeController`:
-  - `GET /api/recipes/top-rated`
-  - `GET /api/recipes/recommended/:userId`
+### Milestone 3
 
-### Middleware
-- Validate rating input (1–5 stars) when posting reviews.
+- Add more advanced rules
+- Adjust it for different user roles if needed
+- Make sure it works in production
+- Add full test coverage
 
-### Testing
-- Jest tests for:
-  - Rating calculation accuracy.
-  - Recommendation logic.
+## Why This Counts as a Real Backend Component
 
-### Future Milestone Considerations
-- **Milestone 2:** Top-rated recipes page; caching for performance.  
-- **Milestone 3:** Personalized recommendations using collaborative filtering or user history analytics.
+This is not just an extra feature like “favorites.”
+Rate limiting actually changes how the backend behaves at the middleware level. It protects routes by controlling traffic and adds a real security layer to the API. This is why it qualifies as a proper backend component.
 
----
+## Current Status
 
-## Conclusion
-The **Recipe Rating & Recommendation System** integrates seamlessly with the current backend and Firestore structure. It provides value to users immediately and allows future scalability for analytics, personalization, and performance optimization. This component meets all course requirements while giving room for innovation in Milestone 2 and 3.
+Research and planning are complete.
+Implementation will begin in Milestone 2 and be fully completed in Milestone 3.

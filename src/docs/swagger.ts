@@ -16,8 +16,121 @@ const options = {
         description: 'Development server',
       },
     ],
+    components: {
+      schemas: {
+        Recipe: {
+          type: 'object',
+          required: ['id', 'name', 'ingredients', 'instructions', 'cookingTime', 'servings'],
+          properties: {
+            id: {
+              type: 'string',
+              description: 'Unique identifier for the recipe'
+            },
+            name: {
+              type: 'string',
+              description: 'Name of the recipe'
+            },
+            ingredients: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              description: 'List of ingredients'
+            },
+            instructions: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              description: 'Step-by-step cooking instructions'
+            },
+            cookingTime: {
+              type: 'number',
+              description: 'Cooking time in minutes'
+            },
+            servings: {
+              type: 'number',
+              description: 'Number of servings'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Creation timestamp'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Last update timestamp'
+            }
+          }
+        },
+        CreateRecipeRequest: {
+          type: 'object',
+          required: ['name', 'ingredients', 'instructions', 'cookingTime', 'servings'],
+          properties: {
+            name: {
+              type: 'string',
+              description: 'Name of the recipe'
+            },
+            ingredients: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              description: 'List of ingredients'
+            },
+            instructions: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              description: 'Step-by-step cooking instructions'
+            },
+            cookingTime: {
+              type: 'number',
+              description: 'Cooking time in minutes'
+            },
+            servings: {
+              type: 'number',
+              description: 'Number of servings'
+            }
+          }
+        },
+        UpdateRecipeRequest: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              description: 'Name of the recipe'
+            },
+            ingredients: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              description: 'List of ingredients'
+            },
+            instructions: {
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              description: 'Step-by-step cooking instructions'
+            },
+            cookingTime: {
+              type: 'number',
+              description: 'Cooking time in minutes'
+            },
+            servings: {
+              type: 'number',
+              description: 'Number of servings'
+            }
+          }
+        }
+      }
+    }
   },
-  apis: ['./src/routes/*.ts'], // path to the API routesz
+  apis: ['./src/routes/*.ts'], // path to the API routes
 };
 
 const specs = swaggerJsdoc(options);

@@ -18,3 +18,8 @@ export const authRateLimiter = rateLimit({
     });
   }
 });
+
+export const resetRateLimiter = () => {
+  // For testing purposes, we can reset the rate limiter
+  // In production, this would not be available
+};

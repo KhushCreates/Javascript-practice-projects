@@ -1,5 +1,6 @@
 import request from 'supertest';
 import app from '../src/app';
+import { resetRateLimiter } from '../src/middleware/rateLimiter';
 
 // Mock Firebase Admin
 let mockUsers: any[] = [];
@@ -51,6 +52,7 @@ jest.mock('dotenv', () => ({
 describe('Authentication API', () => {
   beforeEach(() => {
     mockUsers = [];
+    resetRateLimiter();
   });
 
   describe('POST /api/auth/register', () => {

@@ -1,4 +1,8 @@
 import rateLimit from 'express-rate-limit';
+import { MemoryStore } from 'express-rate-limit';
+
+// Create a memory store for testing
+const memoryStore = new MemoryStore();
 
 // Rate limiter for authentication endpoints
 export const authRateLimiter = rateLimit({
@@ -10,7 +14,8 @@ export const authRateLimiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  skip: (req, res) => process.env.NODE_ENV === 'test', // Skip rate limiting in test environment
+  store: memoryStore, // Use memory store for testing
+  skip: (req, res) => process.env.NODE_ENV === 'test' && !req.headers['x-test-rate-limit'], // Skip unless specifically testing rate limiting
   handler: (req, res) => {
     res.status(429).json({
       error: 'Too many requests from this IP, please try again later.',
@@ -20,6 +25,6 @@ export const authRateLimiter = rateLimit({
 });
 
 export const resetRateLimiter = () => {
-  // For testing purposes, we can reset the rate limiter
-  // In production, this would not be available
+  // Reset the memory store for testing
+  memoryStore.resetAll();
 };

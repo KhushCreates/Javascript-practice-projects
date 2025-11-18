@@ -24,6 +24,11 @@ jest.mock('firebase-admin', () => ({
   })),
   auth: jest.fn(() => ({
     createUser: jest.fn((data: any) => {
+      if (mockUsers.find(u => u.email === data.email)) {
+        const error: any = new Error('Email already exists');
+        error.code = 'auth/email-already-exists';
+        throw error;
+      }
       const user = { ...data, uid: mockUserId };
       mockUsers.push(user);
       return Promise.resolve(user);
@@ -189,6 +194,7 @@ describe('Authentication API', () => {
       for (let i = 0; i < 5; i++) {
         await request(app)
           .post('/api/auth/register')
+          .set('x-test-rate-limit', 'true') // Enable rate limiting for this test
           .send(userData)
           .expect(i === 0 ? 201 : 400); // First succeeds, others fail due to email exists
       }
@@ -196,6 +202,7 @@ describe('Authentication API', () => {
       // 6th request should be rate limited
       const response = await request(app)
         .post('/api/auth/register')
+        .set('x-test-rate-limit', 'true') // Enable rate limiting for this test
         .send(userData)
         .expect(429);
 
@@ -212,6 +219,7 @@ describe('Authentication API', () => {
       for (let i = 0; i < 5; i++) {
         await request(app)
           .post('/api/auth/login')
+          .set('x-test-rate-limit', 'true') // Enable rate limiting for this test
           .send(loginData)
           .expect(401);
       }
@@ -219,6 +227,7 @@ describe('Authentication API', () => {
       // 6th request should be rate limited
       const response = await request(app)
         .post('/api/auth/login')
+        .set('x-test-rate-limit', 'true') // Enable rate limiting for this test
         .send(loginData)
         .expect(429);
 

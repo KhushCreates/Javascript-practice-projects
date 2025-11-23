@@ -7,7 +7,8 @@ import userRoutes from './routes/UserRoutes';
 import ingredientRoutes from './routes/IngredientRoutes';
 import reviewRoutes from './routes/ReviewRoutes';
 import favoritesRoutes from './routes/FavoritesRoutes';
-import { setupSwagger } from './docs/swagger';
+import { setupSwagger } from './docs';
+
 
 dotenv.config();
 

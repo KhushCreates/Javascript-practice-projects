@@ -50,17 +50,21 @@ I considered other components like Multer (file upload) or Nodemailer (email), b
 
 ### Milestone 3
 
-- Add more advanced rules
-- Adjust it for different user roles if needed
-- Make sure it works in production
-- Add full test coverage
+- Add Ingredients, Reviews, and Favorites resources
+- Complete all CRUD endpoints for these resources
+- Add proper validation and error handling
+- Document every route in Swagger
+- Add Jest tests for the new routes
+- Expand the rate limiter to cover additional sensitive endpoints
+- Make sure all existing routes follow a consistent structure
 
-## Why This Counts as a Real Backend Component
+Why This Counts as a Real Backend Component
 
-This is not just an extra feature like “favorites.”
-Rate limiting actually changes how the backend behaves at the middleware level. It protects routes by controlling traffic and adds a real security layer to the API. This is why it qualifies as a proper backend component.
+These resources introduce new database models, new routes, new validations, and full Swagger documentation.
+They expand the API in a functional way, not cosmetic.
+Together with improved rate limiting, this milestone adds real backend depth and a more complete API.
 
-## Current Status
+Current Status
 
-Research and planning are complete.
-Implementation will begin in Milestone 2 and be fully completed in Milestone 3.
+Milestone 2 is completed.
+Milestone 3 work will focus on implementing all remaining resources, documentation, and tests.

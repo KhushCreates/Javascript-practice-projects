@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import recipeRoutes from './routes/RecipeRoutes';
 import userRoutes from './routes/UserRoutes';
+import ingredientRoutes from './routes/IngredientRoutes';
 import { setupSwagger } from './docs/swagger';
 
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.json());
 // Routes
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/auth', userRoutes);
+app.use('/api/ingredients', ingredientRoutes);
 
 // Swagger Documentation
 setupSwagger(app);
@@ -39,6 +41,7 @@ app.get('/', (req, res) => {
       health: '/health',
       recipes: '/api/recipes',
       auth: '/api/auth',
+      ingredients: '/api/ingredients',
       documentation: '/api-docs'
     }
   });

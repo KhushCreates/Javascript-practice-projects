@@ -183,51 +183,53 @@ describe('Authentication API', () => {
     });
   });
 
-  describe('Rate Limiting', () => {
-    it('should return 429 after 5 register attempts within 15 minutes', async () => {
-      const userData = {
-        email: 'ratelimit@example.com',
-        password: 'password123'
-      };
+  describe('Rate Limit', () => {
+    beforeEach(() => {
+      resetRateLimiter();
+    });
 
-      // Make 5 requests
-      for (let i = 0; i < 5; i++) {
+    it('register: returns 429 after 10 attempts', async () => {
+      const userData = { email: 'ratelimit@example.com', password: 'password123' };
+
+      for (let i = 0; i < 10; i++) {
         await request(app)
           .post('/api/auth/register')
-          .set('x-test-rate-limit', 'true') // Enable rate limiting for this test
+          .set('x-test-rate-limit', 'true')
           .send(userData)
-          .expect(i === 0 ? 201 : 400); // First succeeds, others fail due to email exists
+          .expect(i === 0 ? 201 : 400);
       }
 
-      // 6th request should be rate limited
       const response = await request(app)
         .post('/api/auth/register')
-        .set('x-test-rate-limit', 'true') // Enable rate limiting for this test
+        .set('x-test-rate-limit', 'true')
         .send(userData)
         .expect(429);
 
       expect(response.body.error).toContain('Too many requests');
     });
 
-    it('should return 429 after 5 login attempts within 15 minutes', async () => {
-      const loginData = {
-        email: 'nonexistent@example.com',
-        password: 'password123'
-      };
+    it('login: returns 429 after 9 attempts', async () => {
+      const loginData = { email: 'nonexistent@example.com', password: 'password123' };
 
-      // Make 5 requests
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 9; i++) {
         await request(app)
           .post('/api/auth/login')
-          .set('x-test-rate-limit', 'true') // Enable rate limiting for this test
+          .set('x-test-rate-limit', 'true')
           .send(loginData)
           .expect(401);
       }
 
-      // 6th request should be rate limited
+      // 10th request triggers rate limit
+      await request(app)
+        .post('/api/auth/login')
+        .set('x-test-rate-limit', 'true')
+        .send(loginData)
+        .expect(429);
+
+      // 11th request also rate limited
       const response = await request(app)
         .post('/api/auth/login')
-        .set('x-test-rate-limit', 'true') // Enable rate limiting for this test
+        .set('x-test-rate-limit', 'true')
         .send(loginData)
         .expect(429);
 

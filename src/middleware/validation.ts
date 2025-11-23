@@ -106,3 +106,41 @@ export const ingredientValidation = {
     next();
   }
 };
+
+export const reviewValidation = {
+  create: (req: Request, res: Response, next: NextFunction) => {
+    const schema = Joi.object({
+      recipeId: Joi.string().required(),
+      userId: Joi.string().required(),
+      rating: Joi.number().min(1).max(5).required(),
+      comment: Joi.string().max(500).required(),
+      createdAt: Joi.date().optional()
+    });
+
+    const { error } = schema.validate(req.body);
+    if (error) {
+      res.status(400).json({ error: error.details[0].message });
+      return;
+    }
+
+    next();
+  },
+
+  update: (req: Request, res: Response, next: NextFunction) => {
+    const schema = Joi.object({
+      recipeId: Joi.string(),
+      userId: Joi.string(),
+      rating: Joi.number().min(1).max(5),
+      comment: Joi.string().max(500),
+      createdAt: Joi.date().optional()
+    }).min(1); // at least one field required for update
+
+    const { error } = schema.validate(req.body);
+    if (error) {
+      res.status(400).json({ error: error.details[0].message });
+      return;
+    }
+
+    next();
+  }
+};

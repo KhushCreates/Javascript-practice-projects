@@ -1,9 +1,10 @@
-import rateLimit, { RateLimitRequestHandler } from 'express-rate-limit';
+
+import rateLimit from 'express-rate-limit';
 import { MemoryStore } from 'express-rate-limit';
 
-interface ExtendedRateLimitRequestHandler extends RateLimitRequestHandler {
-  store: MemoryStore;
-}
+const authMemoryStore = new MemoryStore();
+const sensitiveMemoryStore = new MemoryStore();
+const apiMemoryStore = new MemoryStore();
 
 // Rate limiter for authentication endpoints
 export const authRateLimiter = rateLimit({
@@ -15,7 +16,7 @@ export const authRateLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  store: new MemoryStore(),
+  store: authMemoryStore,
   skip: (req, res) => process.env.NODE_ENV === 'test' && !req.headers['x-test-rate-limit'],
   handler: (req, res) => {
     res.status(429).json({
@@ -35,7 +36,7 @@ export const sensitiveDataRateLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  store: new MemoryStore(),
+  store: sensitiveMemoryStore,
   skip: (req, res) => process.env.NODE_ENV === 'test' && !req.headers['x-test-rate-limit'],
   handler: (req, res) => {
     res.status(429).json({
@@ -55,7 +56,7 @@ export const apiRateLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  store: new MemoryStore(),
+  store: apiMemoryStore,
   handler: (req, res) => {
     res.status(429).json({
       error: 'Too many requests from this IP, please try again later.',
@@ -66,7 +67,7 @@ export const apiRateLimiter = rateLimit({
 
 export const resetRateLimiter = () => {
   // Reset memory stores used by rate limiters to allow fresh tests
-  (authRateLimiter as ExtendedRateLimitRequestHandler).store.resetAll();
-  (sensitiveDataRateLimiter as ExtendedRateLimitRequestHandler).store.resetAll();
-  (apiRateLimiter as ExtendedRateLimitRequestHandler).store.resetAll();
+  authMemoryStore.resetAll();
+  sensitiveMemoryStore.resetAll();
+  apiMemoryStore.resetAll();
 };

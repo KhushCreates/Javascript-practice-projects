@@ -1,3 +1,4 @@
+
 import rateLimit from 'express-rate-limit';
 import { MemoryStore } from 'express-rate-limit';
 
@@ -19,6 +20,26 @@ export const authRateLimiter = rateLimit({
   handler: (req, res) => {
     res.status(429).json({
       error: 'Too many requests from this IP, please try again later.',
+      retryAfter: '15 minutes'
+    });
+  }
+});
+
+// Extended rate limiter for sensitive routes (login, register, favorites creation)
+export const sensitiveDataRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10, // Example: Limit each IP to 10 requests per 15 minutes for sensitive endpoints
+  message: {
+    error: 'Too many requests from this IP on sensitive endpoints, please try again later.',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: memoryStore,
+  skip: (req, res) => process.env.NODE_ENV === 'test' && !req.headers['x-test-rate-limit'],
+  handler: (req, res) => {
+    res.status(429).json({
+      error: 'Too many requests from this IP on sensitive endpoints, please try again later.',
       retryAfter: '15 minutes'
     });
   }

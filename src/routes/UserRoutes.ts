@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/UserController';
 import { userValidation } from '../middleware/validation';
-import { authRateLimiter } from '../middleware/rateLimiter';
+import { sensitiveDataRateLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
@@ -32,23 +32,12 @@ const router = Router();
  *     responses:
  *       201:
  *         description: User registered successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 uid:
- *                   type: string
- *                 email:
- *                   type: string
  *       400:
  *         description: Invalid input or email already exists
  *       429:
  *         description: Too many requests
  */
-router.post('/register', authRateLimiter, userValidation.register, UserController.register);
+router.post('/register', sensitiveDataRateLimiter, userValidation.register, UserController.register);
 
 /**
  * @swagger
@@ -77,22 +66,11 @@ router.post('/register', authRateLimiter, userValidation.register, UserControlle
  *     responses:
  *       200:
  *         description: Login successful
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 uid:
- *                   type: string
- *                 email:
- *                   type: string
  *       401:
  *         description: Invalid credentials
  *       429:
  *         description: Too many requests
  */
-router.post('/login', authRateLimiter, userValidation.login, UserController.login);
+router.post('/login', sensitiveDataRateLimiter, userValidation.login, UserController.login);
 
 export default router;

@@ -12,10 +12,10 @@ export const authRateLimiter = rateLimit({
     error: 'Too many requests from this IP, please try again later.',
     retryAfter: '15 minutes'
   },
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  store: memoryStore, // Use memory store for testing
-  skip: (req, res) => process.env.NODE_ENV === 'test' && !req.headers['x-test-rate-limit'], // Skip unless specifically testing rate limiting
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: memoryStore,
+  skip: (req, res) => process.env.NODE_ENV === 'test' && !req.headers['x-test-rate-limit'],
   handler: (req, res) => {
     res.status(429).json({
       error: 'Too many requests from this IP, please try again later.',
@@ -24,7 +24,25 @@ export const authRateLimiter = rateLimit({
   }
 });
 
+// General API rate limiter with configurable options
+export const apiRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: {
+    error: 'Too many requests from this IP, please try again later.',
+    retryAfter: '1 hour'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: memoryStore,
+  handler: (req, res) => {
+    res.status(429).json({
+      error: 'Too many requests from this IP, please try again later.',
+      retryAfter: '1 hour'
+    });
+  }
+});
+
 export const resetRateLimiter = () => {
-  // Reset the memory store for testing
   memoryStore.resetAll();
 };

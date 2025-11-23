@@ -209,28 +209,35 @@ describe('Authentication API', () => {
     });
 
     it('login: returns 429 after 9 attempts', async () => {
-      const loginData = { email: 'nonexistent@example.com', password: 'password123' };
+      const userData = { email: 'ratelimitlogin@example.com', password: 'password123' };
+
+      // Register the user first
+      await request(app)
+        .post('/api/auth/register')
+        .set('x-test-rate-limit', 'true')
+        .send(userData)
+        .expect(201);
 
       for (let i = 0; i < 9; i++) {
         await request(app)
           .post('/api/auth/login')
           .set('x-test-rate-limit', 'true')
-          .send(loginData)
-          .expect(401);
+          .send(userData)
+          .expect(200); // successful login attempts before hitting rate limit
       }
 
       // 10th request triggers rate limit
       await request(app)
         .post('/api/auth/login')
         .set('x-test-rate-limit', 'true')
-        .send(loginData)
+        .send(userData)
         .expect(429);
 
       // 11th request also rate limited
       const response = await request(app)
         .post('/api/auth/login')
         .set('x-test-rate-limit', 'true')
-        .send(loginData)
+        .send(userData)
         .expect(429);
 
       expect(response.body.error).toContain('Too many requests');

@@ -70,3 +70,39 @@ export const userValidation = {
     next();
   }
 };
+
+export const ingredientValidation = {
+  create: (req: Request, res: Response, next: NextFunction) => {
+    const schema = Joi.object({
+      recipeId: Joi.string().required(),
+      name: Joi.string().min(1).max(100).required(),
+      quantity: Joi.string().min(1).max(50).required(),
+      unit: Joi.string().max(20).optional()
+    });
+
+    const { error } = schema.validate(req.body);
+    if (error) {
+      res.status(400).json({ error: error.details[0].message });
+      return;
+    }
+
+    next();
+  },
+
+  update: (req: Request, res: Response, next: NextFunction) => {
+    const schema = Joi.object({
+      recipeId: Joi.string(),
+      name: Joi.string().min(1).max(100),
+      quantity: Joi.string().min(1).max(50),
+      unit: Joi.string().max(20).optional()
+    }).min(1); // at least one field required for update
+
+    const { error } = schema.validate(req.body);
+    if (error) {
+      res.status(400).json({ error: error.details[0].message });
+      return;
+    }
+
+    next();
+  }
+};

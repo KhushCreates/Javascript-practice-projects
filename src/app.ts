@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import recipeRoutes from './routes/RecipeRoutes';
 import userRoutes from './routes/UserRoutes';
 import ingredientRoutes from './routes/IngredientRoutes';
+import reviewRoutes from './routes/ReviewRoutes';
+import favoritesRoutes from './routes/FavoritesRoutes';
 import { setupSwagger } from './docs/swagger';
 
 dotenv.config();
@@ -20,6 +22,8 @@ app.use(express.json());
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/auth', userRoutes);
 app.use('/api/ingredients', ingredientRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/favorites', favoritesRoutes);
 
 // Swagger Documentation
 setupSwagger(app);
@@ -42,6 +46,8 @@ app.get('/', (req, res) => {
       recipes: '/api/recipes',
       auth: '/api/auth',
       ingredients: '/api/ingredients',
+      reviews: '/api/reviews',
+      favorites: '/api/favorites',
       documentation: '/api-docs'
     }
   });

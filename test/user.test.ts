@@ -1,3 +1,4 @@
+// test/user.test.ts
 import request from 'supertest';
 import app from '../src/app';
 import { resetRateLimiter } from '../src/middleware/rateLimiter';
@@ -10,9 +11,7 @@ jest.mock('firebase-admin', () => ({
   initializeApp: jest.fn(),
   firestore: jest.fn(() => ({
     collection: jest.fn(() => ({
-      get: jest.fn(() => Promise.resolve({
-        docs: []
-      })),
+      get: jest.fn(() => Promise.resolve({ docs: [] })),
       doc: jest.fn(() => ({
         get: jest.fn(() => Promise.resolve({ exists: false })),
         set: jest.fn(() => Promise.resolve()),
@@ -54,6 +53,18 @@ jest.mock('dotenv', () => ({
   config: jest.fn()
 }));
 
+// --- Suppress console errors/warnings globally ---
+beforeAll(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+  jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterAll(() => {
+  (console.error as jest.Mock).mockRestore();
+  (console.warn as jest.Mock).mockRestore();
+});
+// ---------------------------------------------------
+
 describe('Authentication API', () => {
   beforeEach(() => {
     mockUsers = [];
@@ -62,10 +73,7 @@ describe('Authentication API', () => {
 
   describe('POST /api/auth/register', () => {
     it('should register a new user successfully', async () => {
-      const newUser = {
-        email: 'test@example.com',
-        password: 'password123'
-      };
+      const newUser = { email: 'test@example.com', password: 'password123' };
 
       const response = await request(app)
         .post('/api/auth/register')
@@ -78,10 +86,7 @@ describe('Authentication API', () => {
     });
 
     it('should reject registration with invalid email', async () => {
-      const invalidUser = {
-        email: 'invalid-email',
-        password: 'password123'
-      };
+      const invalidUser = { email: 'invalid-email', password: 'password123' };
 
       await request(app)
         .post('/api/auth/register')
@@ -90,10 +95,7 @@ describe('Authentication API', () => {
     });
 
     it('should reject registration with short password', async () => {
-      const invalidUser = {
-        email: 'test@example.com',
-        password: '123'
-      };
+      const invalidUser = { email: 'test@example.com', password: '123' };
 
       await request(app)
         .post('/api/auth/register')
@@ -102,10 +104,7 @@ describe('Authentication API', () => {
     });
 
     it('should reject registration with missing fields', async () => {
-      const invalidUser = {
-        email: 'test@example.com'
-        // missing password
-      };
+      const invalidUser = { email: 'test@example.com' }; // missing password
 
       await request(app)
         .post('/api/auth/register')
@@ -116,23 +115,12 @@ describe('Authentication API', () => {
 
   describe('POST /api/auth/login', () => {
     beforeEach(async () => {
-      // Register a user first
-      const newUser = {
-        email: 'test@example.com',
-        password: 'password123'
-      };
-
-      await request(app)
-        .post('/api/auth/register')
-        .send(newUser)
-        .expect(201);
+      const newUser = { email: 'test@example.com', password: 'password123' };
+      await request(app).post('/api/auth/register').send(newUser).expect(201);
     });
 
     it('should login successfully with correct credentials', async () => {
-      const loginData = {
-        email: 'test@example.com',
-        password: 'password123'
-      };
+      const loginData = { email: 'test@example.com', password: 'password123' };
 
       const response = await request(app)
         .post('/api/auth/login')
@@ -145,10 +133,7 @@ describe('Authentication API', () => {
     });
 
     it('should reject login with invalid email', async () => {
-      const loginData = {
-        email: 'nonexistent@example.com',
-        password: 'password123'
-      };
+      const loginData = { email: 'nonexistent@example.com', password: 'password123' };
 
       const response = await request(app)
         .post('/api/auth/login')
@@ -159,10 +144,7 @@ describe('Authentication API', () => {
     });
 
     it('should reject login with invalid email format', async () => {
-      const loginData = {
-        email: 'invalid-email',
-        password: 'password123'
-      };
+      const loginData = { email: 'invalid-email', password: 'password123' };
 
       await request(app)
         .post('/api/auth/login')
@@ -171,10 +153,7 @@ describe('Authentication API', () => {
     });
 
     it('should reject login with missing password', async () => {
-      const loginData = {
-        email: 'test@example.com'
-        // missing password
-      };
+      const loginData = { email: 'test@example.com' }; // missing password
 
       await request(app)
         .post('/api/auth/login')
@@ -184,9 +163,7 @@ describe('Authentication API', () => {
   });
 
   describe('Rate Limit', () => {
-    beforeEach(() => {
-      resetRateLimiter();
-    });
+    beforeEach(() => resetRateLimiter());
 
     it('register: returns 429 after 10 attempts', async () => {
       const userData = { email: 'ratelimit@example.com', password: 'password123' };
@@ -211,7 +188,6 @@ describe('Authentication API', () => {
     it('login: returns 429 after 9 attempts', async () => {
       const userData = { email: 'ratelimitlogin@example.com', password: 'password123' };
 
-      // Register the user first
       await request(app)
         .post('/api/auth/register')
         .set('x-test-rate-limit', 'true')
@@ -223,17 +199,15 @@ describe('Authentication API', () => {
           .post('/api/auth/login')
           .set('x-test-rate-limit', 'true')
           .send(userData)
-          .expect(200); // successful login attempts before hitting rate limit
+          .expect(200);
       }
 
-      // 10th request triggers rate limit
       await request(app)
         .post('/api/auth/login')
         .set('x-test-rate-limit', 'true')
         .send(userData)
         .expect(429);
 
-      // 11th request also rate limited
       const response = await request(app)
         .post('/api/auth/login')
         .set('x-test-rate-limit', 'true')

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { auth } from '../config/firebase';
+import jwt from 'jsonwebtoken';
+import { auth, db } from '../config/firebase';
 
 export class UserController {
   static register = async (req: Request, res: Response): Promise<void> => {
@@ -43,16 +44,28 @@ export class UserController {
     try {
       const { email, password } = req.body;
 
-      // For Firebase Admin SDK, we need to verify the user exists
-      // In a real app, you'd use Firebase Auth SDK on client side for login
-      // Here we'll just verify the user exists and return a success message
+      // Verify the user exists in Firebase Auth
       const user = await auth.getUserByEmail(email);
 
-      // In production, you'd generate a custom token or use Firebase Auth
+      // Get user role from Firestore (default to 'user')
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      const role = userDoc.exists && userDoc.data()?.role === 'admin' ? 'admin' : 'user';
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { uid: user.uid },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '24h' }
+      );
+
       res.json({
         message: 'Login successful',
-        uid: user.uid,
-        email: user.email
+        token: token,
+        user: {
+          uid: user.uid,
+          email: user.email,
+          role: role
+        }
       });
     } catch (error: any) {
       console.error('Login error:', error);

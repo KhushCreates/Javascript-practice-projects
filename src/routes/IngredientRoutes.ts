@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { IngredientController } from '../controllers/IngredientController';
 import { ingredientValidation } from '../middleware/validation';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
 const controller = new IngredientController();

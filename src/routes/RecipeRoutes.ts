@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { RecipeController } from '../controllers/RecipeController';
 import { recipeValidation } from '../middleware/validation';
+import { authenticateToken } from '../middleware/authMiddleware';
 
 const router = Router();
 
@@ -8,17 +9,47 @@ const router = Router();
  * @swagger
  * /api/recipes:
  *   get:
- *     summary: Get all recipes
+ *     summary: Get all recipes with pagination
  *     tags: [Recipes]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         description: Number of recipes per page
  *     responses:
  *       200:
- *         description: List of all recipes
+ *         description: Paginated list of recipes
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Recipe'
+ *               type: object
+ *               properties:
+ *                 recipes:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Recipe'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                     limit:
+ *                       type: integer
+ *                     total:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
  */
 router.get('/', RecipeController.getAllRecipes);
 

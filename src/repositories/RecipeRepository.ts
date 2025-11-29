@@ -1,13 +1,28 @@
 import { recipesCollection } from '../config/firebase';
-import { Recipe, CreateRecipeRequest } from '../models/Recipe';
+import { Recipe, CreateRecipeRequest, PaginatedRecipes } from '../models/Recipe';
 
 export class RecipeRepository {
-  static async findAll(): Promise<Recipe[]> {
-    const snapshot = await recipesCollection.get();
-    return snapshot.docs.map(doc => ({
+  static async findAll(page: number = 1, limit: number = 10): Promise<PaginatedRecipes> {
+    const offset = (page - 1) * limit;
+    const snapshot = await recipesCollection.limit(limit).offset(offset).get();
+    const totalSnapshot = await recipesCollection.get();
+    const total = totalSnapshot.size;
+    const totalPages = Math.ceil(total / limit);
+
+    const recipes = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     } as Recipe));
+
+    return {
+      recipes,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages
+      }
+    };
   }
 
   static async findById(id: string): Promise<Recipe | null> {

@@ -1,6 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { RecipeService } from '../services/RecipeService';
 
+interface AuthRequest extends Request {
+  user?: {
+    uid: string;
+    role: string;
+  };
+}
+
 export class RecipeController {
   static getAllRecipes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -27,22 +34,21 @@ export class RecipeController {
     }
   };
 
-  static createRecipe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  static createRecipe = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      // For simplicity, using a mock user ID
-      const mockUserId = 'user123';
-      const recipe = await RecipeService.createRecipe(req.body, mockUserId);
+      const userId = req.user!.uid;
+      const recipe = await RecipeService.createRecipe(req.body, userId);
       res.status(201).json(recipe);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
   };
 
-  static updateRecipe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  static updateRecipe = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const mockUserId = 'user123';
-      const recipe = await RecipeService.updateRecipe(id, req.body, mockUserId);
+      const userId = req.user!.uid;
+      const recipe = await RecipeService.updateRecipe(id, req.body, userId);
 
       if (!recipe) {
         res.status(404).json({ error: 'Recipe not found' });

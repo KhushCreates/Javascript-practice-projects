@@ -44,3 +44,13 @@ export interface Favorite {
   recipeId: string;
   addedAt: Date;
 }
+
+export interface PaginatedRecipes {
+  recipes: Recipe[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}

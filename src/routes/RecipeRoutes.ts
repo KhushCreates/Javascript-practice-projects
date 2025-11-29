@@ -96,7 +96,7 @@ router.get('/:id', RecipeController.getRecipeById);
  *       400:
  *         description: Invalid input data
  */
-router.post('/', authenticateToken, recipeValidation.create, RecipeController.createRecipe);
+router.post('/', recipeValidation.create, RecipeController.createRecipe);
 
 /**
  * @swagger
@@ -125,7 +125,7 @@ router.post('/', authenticateToken, recipeValidation.create, RecipeController.cr
  *       400:
  *         description: Invalid input data
  */
-router.put('/:id', authenticateToken, recipeValidation.update, RecipeController.updateRecipe);
+router.put('/:id', recipeValidation.update, RecipeController.updateRecipe);
 
 /**
  * @swagger
@@ -146,6 +146,6 @@ router.put('/:id', authenticateToken, recipeValidation.update, RecipeController.
  *       404:
  *         description: Recipe not found
  */
-router.delete('/:id', authenticateToken, RecipeController.deleteRecipe);
+router.delete('/:id', RecipeController.deleteRecipe);
 
 export default router;

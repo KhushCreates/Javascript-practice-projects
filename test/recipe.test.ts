@@ -9,6 +9,8 @@ jest.mock('firebase-admin', () => ({
   initializeApp: jest.fn(),
   firestore: jest.fn(() => ({
     collection: jest.fn(() => ({
+      limit: jest.fn().mockReturnThis(),
+      offset: jest.fn().mockReturnThis(),
       get: jest.fn(() => Promise.resolve({
         docs: mockRecipes.map(recipe => ({
           id: recipe.id,

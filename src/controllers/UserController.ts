@@ -61,11 +61,8 @@ export class UserController {
       res.json({
         message: 'Login successful',
         token: token,
-        user: {
-          uid: user.uid,
-          email: user.email,
-          role: role
-        }
+        uid: user.uid,
+        email: user.email
       });
     } catch (error: any) {
       console.error('Login error:', error);

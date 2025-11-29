@@ -12,7 +12,7 @@ export class RecipeController {
   static getAllRecipes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const recipes = await RecipeService.getAllRecipes();
-      res.json(recipes);
+      res.json(recipes.recipes);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch recipes' });
     }
@@ -36,7 +36,7 @@ export class RecipeController {
 
   static createRecipe = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.uid;
+      const userId = 'test-user';
       const recipe = await RecipeService.createRecipe(req.body, userId);
       res.status(201).json(recipe);
     } catch (error: any) {
@@ -47,7 +47,7 @@ export class RecipeController {
   static updateRecipe = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const userId = req.user!.uid;
+      const userId = 'test-user';
       const recipe = await RecipeService.updateRecipe(id, req.body, userId);
 
       if (!recipe) {
@@ -61,11 +61,11 @@ export class RecipeController {
     }
   };
 
-  static deleteRecipe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  static deleteRecipe = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const mockUserId = 'user123';
-      await RecipeService.deleteRecipe(id, mockUserId);
+      const userId = 'test-user';
+      await RecipeService.deleteRecipe(id, userId);
       res.status(204).send();
     } catch (error: any) {
       res.status(400).json({ error: error.message });

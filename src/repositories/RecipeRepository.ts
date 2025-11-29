@@ -1,5 +1,15 @@
 import { recipesCollection } from '../config/firebase';
-import { Recipe, CreateRecipeRequest, PaginatedRecipes } from '../models/Recipe';
+import { Recipe, CreateRecipeRequest } from '../models/Recipe';
+
+interface PaginatedRecipes {
+  recipes: Recipe[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
 
 export class RecipeRepository {
   static async findAll(page: number = 1, limit: number = 10): Promise<PaginatedRecipes> {

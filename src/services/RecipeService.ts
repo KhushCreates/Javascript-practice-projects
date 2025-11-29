@@ -1,9 +1,9 @@
 import { RecipeRepository } from '../repositories/RecipeRepository';
-import { Recipe, CreateRecipeRequest } from '../models/Recipe';
+import { Recipe, CreateRecipeRequest, PaginatedRecipes } from '../models/Recipe';
 
 export class RecipeService {
-  static async getAllRecipes(): Promise<Recipe[]> {
-    return await RecipeRepository.findAll();
+  static async getAllRecipes(page: number = 1, limit: number = 10): Promise<PaginatedRecipes> {
+    return await RecipeRepository.findAll(page, limit);
   }
 
   static async getRecipeById(id: string): Promise<Recipe | null> {

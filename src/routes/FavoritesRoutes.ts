@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { FavoritesController } from '../controllers/FavoritesController';
+import { authenticateToken } from '../middleware/authMiddleware';
 import { sensitiveDataRateLimiter } from '../middleware/rateLimiter';
 
 const router = Router();

@@ -15,12 +15,12 @@ router.get('/:id', (req, res) => controller.getById(req, res));
 router.get('/recipe/:recipeId', (req, res) => controller.getByRecipeId(req, res));
 
 // POST /ingredients - create new ingredient
-router.post('/', ingredientValidation.create, (req, res) => controller.create(req, res));
+router.post('/', authenticateToken, ingredientValidation.create, (req, res) => controller.create(req, res));
 
 // PUT /ingredients/:id - update ingredient
-router.put('/:id', ingredientValidation.update, (req, res) => controller.update(req, res));
+router.put('/:id', authenticateToken, ingredientValidation.update, (req, res) => controller.update(req, res));
 
 // DELETE /ingredients/:id - delete ingredient
-router.delete('/:id', (req, res) => controller.delete(req, res));
+router.delete('/:id', authenticateToken, (req, res) => controller.delete(req, res));
 
 export default router;

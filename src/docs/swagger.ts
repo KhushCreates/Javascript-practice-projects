@@ -17,6 +17,13 @@ const options = {
       },
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
       schemas: {
         Recipe: {
           type: 'object',
@@ -129,6 +136,7 @@ const options = {
         post: {
           summary: 'Create a new recipe',
           tags: ['Recipes'],
+          security: [{ bearerAuth: [] }],
           requestBody: {
             required: true,
             content: {
@@ -140,6 +148,7 @@ const options = {
           responses: {
             201: { description: 'Recipe created successfully' },
             400: { description: 'Invalid input' },
+            401: { description: 'Unauthorized' },
           },
         },
       },
@@ -163,6 +172,7 @@ const options = {
         put: {
           summary: 'Update a recipe',
           tags: ['Recipes'],
+          security: [{ bearerAuth: [] }],
           parameters: [
             {
               name: 'id',
@@ -182,12 +192,14 @@ const options = {
           responses: {
             200: { description: 'Recipe updated' },
             400: { description: 'Invalid input' },
+            401: { description: 'Unauthorized' },
             404: { description: 'Recipe not found' },
           },
         },
         delete: {
           summary: 'Delete a recipe',
           tags: ['Recipes'],
+          security: [{ bearerAuth: [] }],
           parameters: [
             {
               name: 'id',
@@ -199,6 +211,7 @@ const options = {
           responses: {
             200: { description: 'Recipe deleted' },
             404: { description: 'Recipe not found' },
+            401: { description: 'Unauthorized' },
           },
         },
       },
@@ -223,6 +236,7 @@ const options = {
         post: {
           summary: "Add a new ingredient",
           tags: ["Ingredients"],
+          security: [{ bearerAuth: [] }],
           requestBody: {
             required: true,
             content: {
@@ -234,6 +248,7 @@ const options = {
           responses: {
             "201": { description: "Ingredient added" },
             "400": { description: "Invalid input" },
+            "401": { description: "Unauthorized" },
           },
         },
       },
@@ -252,6 +267,7 @@ const options = {
         put: {
           summary: "Update an ingredient",
           tags: ["Ingredients"],
+          security: [{ bearerAuth: [] }],
           parameters: [
             { name: "id", in: "path", required: true, schema: { type: "string" } },
           ],
@@ -263,17 +279,20 @@ const options = {
             "200": { description: "Ingredient updated" },
             "404": { description: "Ingredient not found" },
             "400": { description: "Invalid input" },
+            "401": { description: "Unauthorized" },
           },
         },
         delete: {
           summary: "Delete an ingredient",
           tags: ["Ingredients"],
+          security: [{ bearerAuth: [] }],
           parameters: [
             { name: "id", in: "path", required: true, schema: { type: "string" } },
           ],
           responses: {
             "200": { description: "Ingredient deleted" },
             "404": { description: "Ingredient not found" },
+            "401": { description: "Unauthorized" },
           },
         },
       },
@@ -291,6 +310,7 @@ const options = {
         post: {
           summary: "Add a new review",
           tags: ["Reviews"],
+          security: [{ bearerAuth: [] }],
           requestBody: {
             required: true,
             content: { "application/json": { schema: { $ref: "#/components/schemas/CreateReviewRequest" } } },
@@ -298,6 +318,7 @@ const options = {
           responses: {
             "201": { description: "Review added" },
             "400": { description: "Invalid input" },
+            "401": { description: "Unauthorized" },
           },
         },
       },
@@ -314,6 +335,7 @@ const options = {
         put: {
           summary: "Update a review",
           tags: ["Reviews"],
+          security: [{ bearerAuth: [] }],
           parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
           requestBody: {
             required: true,
@@ -323,15 +345,18 @@ const options = {
             "200": { description: "Review updated" },
             "404": { description: "Review not found" },
             "400": { description: "Invalid input" },
+            "401": { description: "Unauthorized" },
           },
         },
         delete: {
           summary: "Delete a review",
           tags: ["Reviews"],
+          security: [{ bearerAuth: [] }],
           parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
           responses: {
             "200": { description: "Review deleted" },
             "404": { description: "Review not found" },
+            "401": { description: "Unauthorized" },
           },
         },
       },
@@ -349,6 +374,7 @@ const options = {
         post: {
           summary: "Add a new favorite",
           tags: ["Favorites"],
+          security: [{ bearerAuth: [] }],
           requestBody: {
             required: true,
             content: { "application/json": { schema: { $ref: "#/components/schemas/CreateFavoriteRequest" } } },
@@ -356,6 +382,7 @@ const options = {
           responses: {
             "201": { description: "Favorite added" },
             "400": { description: "Invalid input" },
+            "401": { description: "Unauthorized" },
           },
         },
         delete: {

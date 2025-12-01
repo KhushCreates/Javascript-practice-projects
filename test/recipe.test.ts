@@ -57,6 +57,18 @@ jest.mock('dotenv', () => ({
   config: jest.fn()
 }));
 
+// Mock authentication middleware
+jest.mock('../src/middleware/authMiddleware', () => ({
+  authenticateToken: jest.fn((req: any, res: any, next: any) => {
+    req.user = { uid: 'test-user-id', role: 'user' };
+    next();
+  }),
+  requireAdmin: jest.fn((req: any, res: any, next: any) => {
+    // For tests, allow admin operations
+    next();
+  })
+}));
+
 describe('Indian Recipe API', () => {
 
   describe('Health Check', () => {

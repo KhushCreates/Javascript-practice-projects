@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { RecipeController } from '../controllers/RecipeController';
 import { recipeValidation } from '../middleware/validation';
-import { authenticateToken } from '../middleware/authMiddleware';
+import { authenticateToken, requireAdmin } from '../middleware/authMiddleware';
 
 const router = Router();
 
@@ -96,7 +96,7 @@ router.get('/:id', RecipeController.getRecipeById);
  *       400:
  *         description: Invalid input data
  */
-router.post('/', recipeValidation.create, RecipeController.createRecipe);
+router.post('/', authenticateToken, recipeValidation.create, RecipeController.createRecipe);
 
 /**
  * @swagger
@@ -125,7 +125,7 @@ router.post('/', recipeValidation.create, RecipeController.createRecipe);
  *       400:
  *         description: Invalid input data
  */
-router.put('/:id', recipeValidation.update, RecipeController.updateRecipe);
+router.put('/:id', authenticateToken, recipeValidation.update, RecipeController.updateRecipe);
 
 /**
  * @swagger
@@ -146,6 +146,6 @@ router.put('/:id', recipeValidation.update, RecipeController.updateRecipe);
  *       404:
  *         description: Recipe not found
  */
-router.delete('/:id', RecipeController.deleteRecipe);
+router.delete('/:id', authenticateToken, requireAdmin, RecipeController.deleteRecipe);
 
 export default router;

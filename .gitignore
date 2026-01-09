@@ -1,3 +1,6 @@
 node_modules/
 dist/
 securityAccountKey.json
+.env
+*.json
+firebase-adminsdk-*.json
